@@ -1,13 +1,19 @@
 const express = require("express");
-const { updateTopics } = require("./controllers/controllers");
+const { updateTopics, getArticles } = require("./controllers/controllers");
 
 const app = express();
 
-// Looks for one of these resquests, invokes the  function
-app.get("/api/topics", updateTopics)
-app.use((error, request, repsonse, next) => {
-  console.log(error);
-  response.status(500).send({error: 'Internal server error'})
-})
+app.get("/api/topics", updateTopics);
+
+app.get("/api/articles", getArticles);
+
+// This is only works with 404 - endpoint not found
+app.use('*', ( request, response, next ) => {
+  response.status(404).send({ msg: "End Point Not Found." });
+});
+
+app.use((error, request, response, next) => {
+  response.status(500).send({ msg: response.error });
+});
 
 module.exports = app;

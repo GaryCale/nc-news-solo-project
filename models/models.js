@@ -9,4 +9,11 @@ const fetchTopics = () => {
   })
 };
 
-module.exports = { fetchTopics };
+const fetchArticles = () => {
+  const queryString = `SELECT * FROM articles;`;
+  return db.query(queryString).then((result) => {
+    return result.rows;
+  });
+}
+
+module.exports = { fetchTopics, fetchArticles };
