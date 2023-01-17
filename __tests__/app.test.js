@@ -24,14 +24,18 @@ describe("Endpoint: GET api/topics", () => {
     })
   })
 
-  test("Returns an array of objects with correct properties", () => {
-    return request(app).get("/api/topics").expect(200).then((response) => {
-      return response.body.topics;
-    }).then((response) => {
+  test("Returns an array of objects with correct properties, and the correct length array", () => {
+    return request(app)
+      .get("/api/topics")
+      .expect(200)
+      .then((response) => {
+        return response.body.topics;
+      })
+      .then((response) => {
         response.forEach((topic) => {
           expect(topic.hasOwnProperty("slug")).toBe(true);
           expect(topic.hasOwnProperty("description")).toBe(true);
-        })
+        });
       });
   });
 });
@@ -46,30 +50,49 @@ describe('404 Error', () => {
     })
   })
 })
-// {
-//           article_id: 1,
-//           title: 'Living in the shadow of a great man',
-//           topic: 'mitch',
-//           author: 'butter_bridge',
-//           body: 'I find this existence challenging',
-//           created_at: '2020-07-09T20:11:00.000Z',
-//           votes: 100,
-//           article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.
 
-// describe("Endpoint: GET /api/articles", () => {
-//   test("Returns an array of objects with correct properties", () => {
-//     return request(app)
-//       .get("/api/articles")
-//       .expect(200)
-//       .then((response) => {
-//         response.body.forEach((article) => {
-//           expect(article.hasOwnProperty("article_id")).toBe(true);
-//           expect(article.hasOwnProperty("title")).toBe(true);
-//           expect(article.hasOwnProperty("article_id")).toBe(true);
-//           expect(article.hasOwnProperty("article_id")).toBe(true);
-//           expect(article.hasOwnProperty("article_id")).toBe(true);
-//           expect(article.hasOwnProperty("article_id")).toBe(true);
-//         })
-//       });
-//   });
-// });
+describe("Endpoint: GET /api/articles", () => {
+
+  test("Returns a status code of 200 when query exists, and the correct length array", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((result) => {
+        expect(result.body).toHaveLength(12);
+        console.log(result.body)
+      });
+  });
+
+  test("Returns an array of objects with correct properties", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        response.body.forEach((article) => {
+          expect(article.hasOwnProperty("article_id")).toBe(true);
+          expect(article.hasOwnProperty("title")).toBe(true);
+          expect(article.hasOwnProperty("topic")).toBe(true);
+          expect(article.hasOwnProperty("author")).toBe(true);
+          expect(article.hasOwnProperty("body")).toBe(true);
+          expect(article.hasOwnProperty("created_at")).toBe(true);
+          expect(article.hasOwnProperty("votes")).toBe(true);
+          expect(article.hasOwnProperty("article_img_url")).toBe(true);
+        })
+      });
+  });
+
+  test("Each article object has a property called comment_count which has the correct value for the ids of that type", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        response.body.forEach((article) => {
+          
+        });
+      });
+  });
+
+  test("The article objects are sorted in descending order by their date property", () => {
+
+  });
+});
