@@ -1,18 +1,21 @@
 const express = require("express");
-const { updateTopics, updateArticles } = require("./controllers/controllers");
+const {
+  getTopics,
+  getArticles
+} = require("./controllers/controllers");
 
 const app = express();
 
-app.get("/api/topics", updateTopics);
+app.get("/api/topics", getTopics);
 
-app.get("/api/articles", updateArticles);
+app.get("/api/articles", getArticles);
 
-// This only works with 404 - endpoint not found
-app.use('*', ( request, response, next ) => {
+app.all("/*", (request, response, next) => {
   response.status(404).send({ msg: "End Point Not Found." });
 });
 
 app.use((error, request, response, next) => {
+  console.log(error);
   response.status(500).send({ msg: response.error });
 });
 

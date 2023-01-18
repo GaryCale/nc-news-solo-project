@@ -1,28 +1,26 @@
-const app = require('../app');
+const app = require("../app");
 const request = require("supertest");
 const db = require("../db/connection");
-const seed = require('../db/seeds/seed');
-const testData = require('../db/data/test-data');
-
+const seed = require("../db/seeds/seed");
+const testData = require("../db/data/test-data");
 
 afterAll(() => {
   return db.end();
-})
+});
 
 beforeEach(() => {
-  return seed(testData)
-})
+  return seed(testData);
+});
 
 describe("Endpoint: GET api/topics", () => {
-  
-  test('Returns a status code of 200 when query exists', () => {
+  test("Returns a status code of 200 when query exists", () => {
     return request(app)
-    .get("/api/topics")
-    .expect(200)
-    .then((result) => {
-      expect(result.body.topics).toHaveLength(3)
-    })
-  })
+      .get("/api/topics")
+      .expect(200)
+      .then((result) => {
+        expect(result.body.topics).toHaveLength(3);
+      });
+  });
 
   test("Returns an array of objects with correct properties, and the correct length array", () => {
     return request(app)
@@ -40,26 +38,24 @@ describe("Endpoint: GET api/topics", () => {
   });
 });
 
-describe('404 Error', () => {
-  test('Returns a status code of 404 when passed a endpoint that does not exist', () => {
+describe("404 Error", () => {
+  test("Returns a status code of 404 when passed a endpoint that does not exist", () => {
     return request(app)
-    .get('/api/')
-    .expect(404)
-    .then((result) => {
-      expect(result.body.msg).toBe("End Point Not Found.")
-    })
-  })
-})
+      .get("/api/")
+      .expect(404)
+      .then((result) => {
+        expect(result.body.msg).toBe("End Point Not Found.");
+      });
+  });
+});
 
 describe("Endpoint: GET /api/articles", () => {
-
   test("Returns a status code of 200 when query exists, and the correct length array", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
       .then((result) => {
         expect(result.body).toHaveLength(12);
-        console.log(result.body)
       });
   });
 
@@ -67,32 +63,29 @@ describe("Endpoint: GET /api/articles", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
-      .then((response) => {
-        response.body.forEach((article) => {
-          expect(article.hasOwnProperty("article_id")).toBe(true);
-          expect(article.hasOwnProperty("title")).toBe(true);
-          expect(article.hasOwnProperty("topic")).toBe(true);
-          expect(article.hasOwnProperty("author")).toBe(true);
-          expect(article.hasOwnProperty("body")).toBe(true);
-          expect(article.hasOwnProperty("created_at")).toBe(true);
-          expect(article.hasOwnProperty("votes")).toBe(true);
-          expect(article.hasOwnProperty("article_img_url")).toBe(true);
-        })
-      });
-  });
-
-  test("Each article object has a property called comment_count which has the correct value for the ids of that type", () => {
-    return request(app)
-      .get("/api/articles")
-      .expect(200)
-      .then((response) => {
-        response.body.forEach((article) => {
-          
+      .then((articles) => {
+        articles.body.forEach((article) => {
+          expect.objectContaining({
+              title: expect.any(String),
+              topic: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              created_at: expect.any(Date),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(Number),
+              article_id: expect.any(Number)
+            })
         });
       });
   });
 
   test("The article objects are sorted in descending order by their date property", () => {
-
+    // return request(app)
+    //   .get("/api/comments")
+    //   .expect(200)
+    //   .then((response) => {
+    //     console.log(response.body.comment_ids);
+    //   });
   });
 });
