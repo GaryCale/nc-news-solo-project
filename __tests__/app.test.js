@@ -85,7 +85,6 @@ describe("Endpoint: GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then((response) => {
-        console.log(response.body.articles);
         expect(response.body.articles).toBeSortedBy("created_at", {descending: true})
       });
   });
