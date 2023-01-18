@@ -55,7 +55,7 @@ describe("Endpoint: GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then((result) => {
-        expect(result.body).toHaveLength(12);
+        expect(result.body.articles).toHaveLength(12);
       });
   });
 
@@ -63,17 +63,17 @@ describe("Endpoint: GET /api/articles", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
-      .then((articles) => {
-        articles.body.forEach((article) => {
-          expect.objectContaining({
+      .then((response) => {
+        response.body.articles.forEach((article) => {
+          expect(article).toMatchObject({
               title: expect.any(String),
               topic: expect.any(String),
               author: expect.any(String),
               body: expect.any(String),
-              created_at: expect.any(Date),
+              created_at: expect.any(String),
               votes: expect.any(Number),
               article_img_url: expect.any(String),
-              comment_count: expect.any(Number),
+              comment_count: expect.any(String),
               article_id: expect.any(Number)
             })
         });
@@ -81,11 +81,12 @@ describe("Endpoint: GET /api/articles", () => {
   });
 
   test("The article objects are sorted in descending order by their date property", () => {
-    // return request(app)
-    //   .get("/api/comments")
-    //   .expect(200)
-    //   .then((response) => {
-    //     console.log(response.body.comment_ids);
-    //   });
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        console.log(response.body.articles);
+        expect(response.body.articles).toBeSortedBy("created_at", {descending: true})
+      });
   });
 });
