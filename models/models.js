@@ -17,7 +17,6 @@ const fetchArticles = () => {
 const fetchSingleArticle = (id) => {
   const queryString = `SELECT * FROM articles WHERE articles.article_id = $1`;
   return db.query(queryString, [id]).then((result) => {
-    console.log(result.rows)
     if(result.rows.length < 1){
       return Promise.reject({
         status: 404,
