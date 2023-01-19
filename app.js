@@ -16,6 +16,8 @@ app.get("/api/articles/:article_id", getSingleArticleById);
 
 app.get("/api/articles/:article_id/comments", getComments);
 
+// app.post("/api/articles/:article_id/comments", postComment);
+
 app.all("/*", (request, response, next) => {
   response.status(404).send({ msg: "End Point Not Found." });
 });

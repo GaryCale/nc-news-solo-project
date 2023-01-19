@@ -40,9 +40,14 @@ const fetchComments = (id) => {
   });
 };
 
+// const insertComment = (id) => {
+//   return db.query(`INSERT INTO comments`)
+// };
+
 module.exports = {
   fetchTopics,
   fetchArticles,
   fetchSingleArticle,
   fetchComments,
+  // insertComment,
 };

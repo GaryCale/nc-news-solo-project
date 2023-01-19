@@ -127,11 +127,12 @@ describe("Endpoint: GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/1/comments")
       .expect(200)
   });
-  test("Returns an array of objects with the correct ids and properties", () => {
+  test("Returns an array of objects with the correct ids and properties, and returns correct error when returning an empty array", () => {
     return request(app)
       .get("/api/articles/1/comments")
       .expect(200)
       .then((result) => {
+        expect(result.body.comments.length).toBeGreaterThan(1)
         result.body.comments.forEach((comment) => {
           expect(comment).toMatchObject({
             comment_id: expect.any(Number),
@@ -142,6 +143,24 @@ describe("Endpoint: GET /api/articles/:article_id/comments", () => {
             article_id: expect.any(Number)
           });
         });
+      });
+  });
+  test("The comments are sorted in ascending order by their created_at property", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((result) => {
+        expect(result.body.comments).toBeSortedBy("created_at", {
+          ascending: true,
+        });
+      });
+  });
+  test("Returns 400 when passed an invalid id", () => {
+    return request(app)
+      .get("/api/articles/abc/comments")
+      .expect(400)
+      .then((result) => {
+        expect(result.body.msg).toBe("Bad Request");
       });
   });
 });
