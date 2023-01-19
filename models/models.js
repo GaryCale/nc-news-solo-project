@@ -27,29 +27,22 @@ const fetchSingleArticle = (id) => {
   })
 };
 
-// const user = rows[0];
-// if (!user) {
-//   return Promise.reject({
-//     status: 404,
-//     msg: `No user found for user_id: ${user_id}`,
-//   });
-// }
-// return user;
-
-
-
-// const fetchComments = (id) => {
-//   const queryString = `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at ASC`;
-//   return db.query(queryString, [id]).then((result) => {
-//     return result.rows;
-//   });
-// };
-
-// GROUP BY articles.article_id ORDER BY created_at
+const fetchComments = (id) => {
+  const queryString = `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at ASC`;
+  return db.query(queryString, [id]).then((result) => {
+    if (result.rows.length < 1) {
+      return Promise.reject({
+        status: 404,
+        msg: "Comments not found",
+      });
+    }
+    return result.rows;
+  });
+};
 
 module.exports = {
   fetchTopics,
   fetchArticles,
   fetchSingleArticle,
-  // fetchComments,
+  fetchComments,
 };

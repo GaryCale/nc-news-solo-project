@@ -67,7 +67,7 @@ describe("Endpoint: GET /api/articles", () => {
         });
       });
   });
-  test("The article objects are sorted in descending order by their date property", () => {
+  test("The articleS are sorted in descending order by their date property", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -83,7 +83,6 @@ describe("Endpoint: GET /api/articles/:article_id", () => {
   test("Returns a status code of 200 when query exists", () => {
     return request(app).get("/api/articles/1").expect(200);
   });
-
   test("Returns 404 when passed a valid id but it does not exist", () => {
     return request(app)
     .get("/api/articles/999")
@@ -92,7 +91,6 @@ describe("Endpoint: GET /api/articles/:article_id", () => {
       expect(res.body.msg).toBe("Article not found")
     })
   })
-  
   test("Returns 400 when passed an invalid id", () => {
     return request(app)
     .get("/api/articles/abc")
@@ -101,7 +99,6 @@ describe("Endpoint: GET /api/articles/:article_id", () => {
       expect(res.body.msg).toBe("Bad Request")
     })
   })
-
   test("Returns a single article object with an id which matches the parametric id, and article has the correct properties", () => {
     return request(app)
       .get("/api/articles/1")
@@ -121,31 +118,49 @@ describe("Endpoint: GET /api/articles/:article_id", () => {
   });
 });
 
-// describe("Endpoint: GET /api/articles/:article_id/comments", () => {
-//   test("Returns a status code of 200 when query exists", () => {
-//     return request(app)
-//       .get("/api/articles/1/comments")
-//       .expect(200)
-//   });
-//   test("Returns an array of objects with the correct ids and properties", () => {
-//     return request(app)
-//       .get("/api/articles/1/comments")
-//       .expect(200)
-//       .then((result) => {
-//         console.log(result.body.comments);
-//         result.body.comments.forEach((comment) => {
-//           expect(comment).toMatchObject({
-//             comment_id: expect.any(Number),
-//             votes: expect.any(Number),
-//             created_at: expect.any(String),
-//             author: expect.any(String),
-//             body: expect.any(String),
-//             article_id: expect.any(Number)
-//           });
-//         });
-//       });
-//   });
-// });
+describe("Endpoint: GET /api/articles/:article_id/comments", () => {
+  test("Returns a status code of 200 when query exists", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+  });
+  test("Returns an array of objects with the correct ids and properties", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((result) => {
+        expect(result.body.comments.length).toBeGreaterThan(1)
+        result.body.comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            article_id: expect.any(Number)
+          });
+        });
+      });
+  });
+  test("The comments are sorted in ascending order by their created_at property", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((res) => {
+        expect(res.body.comments).toBeSortedBy("created_at", {
+          ascending: true,
+        });
+      });
+  });
+  test("Returns 400 when passed an invalid id", () => {
+    return request(app)
+      .get("/api/articles/abc/comments")
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("Bad Request");
+      });
+  });
+});
 
 describe("404 Error", () => {
 test("Returns a status code of 404 when passed a endpoint that does not exist", () => {
@@ -164,11 +179,3 @@ test("Returns a status code of 404 when passed a endpoint that does not exist", 
 
 
 
-// an array of comments for the given article_id of which each comment should have the following properties:
-// comment_id
-// votes
-// created_at
-// author
-// body
-// article_id
-// comments should be served with the most recent comments first

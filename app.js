@@ -3,7 +3,7 @@ const {
   getTopics,
   getArticles,
   getSingleArticleById,
-  // getComments
+  getComments
 } = require("./controllers/controllers");
 
 const app = express();
@@ -14,7 +14,7 @@ app.get("/api/articles", getArticles);
 
 app.get("/api/articles/:article_id", getSingleArticleById);
 
-// app.get("/api/articles/:article_id/comments", getComments);
+app.get("/api/articles/:article_id/comments", getComments);
 
 app.all("/*", (request, response, next) => {
   response.status(404).send({ msg: "End Point Not Found." });
