@@ -4,6 +4,7 @@ const {
   fetchSingleArticle,
   fetchComments,
   insertComment,
+  updateArticle
 } = require("../models/models");
 
 const getTopics = (request, response, next) => {
@@ -48,17 +49,33 @@ const getComments = (request, response, next) => {
   })
 };
 
-// const postComment = (request, response, next) => {
-//   const { article_id } = request.params
-//   insertComment(article_id)
-//   .then((comment) => {
-//     response.status(200).send({})
-//   })
-// }
+const postArticle = (req, res, next) => {
+  const { article_id } = req.params;
+  insertComment(req.body, article_id)
+  .then((newArticle) => {
+    res.status(201).send({ article: newArticle });
+  })
+  .catch((err) => {
+    next(err)
+  })
+};
 
-module.exports = { 
-  getTopics, getArticles, 
-  getSingleArticleById, 
+const patchArticle = (req, res, next) => {
+  const { article_id } = req.params;
+  updateArticle(req.body, article_id)
+    .then((updArticle) => {
+      res.status(200).send({ article: updArticle });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+module.exports = {
+  getTopics,
+  getArticles,
+  getSingleArticleById,
   getComments,
-  // postComment
+  postArticle,
+  patchArticle
 };
