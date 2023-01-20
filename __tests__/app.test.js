@@ -4,7 +4,6 @@ const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data");
 
-
 beforeEach(() => {
   return seed(testData);
 });
@@ -222,7 +221,7 @@ describe("Endpoint: PATCH /api/articles/:article_id", () => {
           author: expect.any(String),
           body: expect.any(String),
           created_at: expect.any(String),
-          votes: expect.any(Number),
+          votes: 110,
           article_img_url: expect.any(String),
         });
       });
@@ -241,6 +240,27 @@ describe("Endpoint: PATCH /api/articles/:article_id", () => {
       .patch("/api/articles/1")
       .send({ inc_votes: "string" })
       .expect(400)
+      .then((res) => {
+       expect(res.body.msg).toBe("Bad Request");
+      })
+  })
+  test("Returns 400 status when user sends wrong article id", () => {
+    return request(app)
+      .patch("/api/articles/invalid")
+      .send({ inc_votes: 999 })
+      .expect(400)
+      .then((res) => {
+       expect(res.body.msg).toBe("Bad Request");
+      })
+  })
+  test("Returns 404 status when user sends id that doesnt exist", () => {
+    return request(app)
+      .patch("/api/articles/999")
+      .send({ inc_votes: 1 })
+      .expect(404)
+      .then((res) => {
+       expect(res.body.msg).toBe("No article found");
+      })
   })
 });
 

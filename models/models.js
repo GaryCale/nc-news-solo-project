@@ -63,6 +63,12 @@ const updateArticle = (reqObj, id) => {
   RETURNING *
   `;
   return db.query(queryString, [inc_votes, id]).then((result) => {
+    if(result.rows.length === 0){
+      return Promise.reject({
+        status: 404,
+        msg: "No article found",
+      });
+    }
     return result.rows[0];
   })
 };
