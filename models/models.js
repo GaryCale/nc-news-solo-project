@@ -42,7 +42,6 @@ const fetchComments = (id) => {
 
 const insertComment = (newComment, id) => {
   const { body, username } = newComment;
-  console.log(body, username, id);
   return db
     .query(
       `INSERT INTO comments (body, author, article_id) VALUES ($1, $2, $3) 
@@ -50,14 +49,28 @@ const insertComment = (newComment, id) => {
       [body, username, id]
     )
     .then((result) => {
-      if (result.rows.length < 1) {
-        return Promise.reject({
-          status: 404,
-          msg: "Comments not found",
-        });
-      }
+      // if (result.rows.length < 1) {
+      //   return Promise.reject({
+      //     status: 404,
+      //     msg: "Comment not found",
+      //   });
+      // }
+      if(newComment)
       return result.rows[0];
     });
+};
+
+const updateArticle = (reqObj, id) => {
+  const { inc_votes } = reqObj
+  const queryString = `
+  UPDATE articles 
+  SET votes = votes + $1 
+  WHERE article_id = $2
+  RETURNING *
+  `;
+  return db.query(queryString, [inc_votes, id]).then((result) => {
+    return result.rows[0];
+  })
 };
 
 module.exports = {
@@ -65,5 +78,6 @@ module.exports = {
   fetchArticles,
   fetchSingleArticle,
   fetchComments,
-  insertComment
+  insertComment,
+  updateArticle,
 };
