@@ -17,19 +17,19 @@ describe("Endpoint: GET api/topics", () => {
     return request(app)
       .get("/api/topics")
       .expect(200)
-      .then((res) => {
-        expect(res.body.topics).toHaveLength(3);
+      .then((result) => {
+        expect(result.body.topics).toHaveLength(3);
       });
   });
   test("Returns an array of objects with correct properties, and the correct length array", () => {
     return request(app)
       .get("/api/topics")
       .expect(200)
-      .then((res) => {
-        return res.body.topics;
+      .then((result) => {
+        return result.body.topics;
       })
-      .then((res) => {
-        res.forEach((topic) => {
+      .then((response) => {
+        response.forEach((topic) => {
           expect(topic.hasOwnProperty("slug")).toBe(true);
           expect(topic.hasOwnProperty("description")).toBe(true);
         });
@@ -42,17 +42,17 @@ describe("Endpoint: GET /api/articles", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
-      .then((res) => {
-        expect(res.body.articles).toHaveLength(12);
+      .then((result) => {
+        expect(result.body.articles).toHaveLength(12);
       });
   });
   test("Returns an array of objects with correct properties", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
-      .then((res) => {
-        expect(res.body.articles.length).toBeGreaterThan(1);
-        res.body.articles.forEach((article) => {
+      .then((result) => {
+        expect(result.body.articles.length).toBeGreaterThan(1);
+        result.body.articles.forEach((article) => {
           expect(article).toMatchObject({
             title: expect.any(String),
             topic: expect.any(String),
@@ -71,8 +71,8 @@ describe("Endpoint: GET /api/articles", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
-      .then((res) => {
-        expect(res.body.articles).toBeSortedBy("created_at", {
+      .then((result) => {
+        expect(result.body.articles).toBeSortedBy("created_at", {
           descending: true,
         });
       });
@@ -88,8 +88,8 @@ describe("Endpoint: GET /api/articles/:article_id", () => {
     return request(app)
     .get("/api/articles/999")
     .expect(404)
-    .then((res) => {
-      expect(res.body.msg).toBe("Article not found")
+    .then((result) => {
+      expect(result.body.msg).toBe("Article not found")
     })
   })
   
@@ -97,8 +97,8 @@ describe("Endpoint: GET /api/articles/:article_id", () => {
     return request(app)
     .get("/api/articles/abc")
     .expect(400)
-    .then((res) => {
-      expect(res.body.msg).toBe("Bad Request")
+    .then((result) => {
+      expect(result.body.msg).toBe("Bad Request")
     })
   })
 
@@ -106,8 +106,8 @@ describe("Endpoint: GET /api/articles/:article_id", () => {
     return request(app)
       .get("/api/articles/1")
       .expect(200)
-      .then((res) => {
-        expect(res.body.article).toMatchObject({
+      .then((result) => {
+        expect(result.body.article).toMatchObject({
           article_id: expect.any(Number),
           title: expect.any(String),
           topic: expect.any(String),
@@ -121,39 +121,57 @@ describe("Endpoint: GET /api/articles/:article_id", () => {
   });
 });
 
-// describe("Endpoint: GET /api/articles/:article_id/comments", () => {
-//   test("Returns a status code of 200 when query exists", () => {
-//     return request(app)
-//       .get("/api/articles/1/comments")
-//       .expect(200)
-//   });
-//   test("Returns an array of objects with the correct ids and properties", () => {
-//     return request(app)
-//       .get("/api/articles/1/comments")
-//       .expect(200)
-//       .then((result) => {
-//         console.log(result.body.comments);
-//         result.body.comments.forEach((comment) => {
-//           expect(comment).toMatchObject({
-//             comment_id: expect.any(Number),
-//             votes: expect.any(Number),
-//             created_at: expect.any(String),
-//             author: expect.any(String),
-//             body: expect.any(String),
-//             article_id: expect.any(Number)
-//           });
-//         });
-//       });
-//   });
-// });
+describe("Endpoint: GET /api/articles/:article_id/comments", () => {
+  test("Returns a status code of 200 when query exists", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+  });
+  test("Returns an array of objects with the correct ids and properties, and returns correct error when returning an empty array", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((result) => {
+        expect(result.body.comments.length).toBeGreaterThan(1)
+        result.body.comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            article_id: expect.any(Number)
+          });
+        });
+      });
+  });
+  test("The comments are sorted in ascending order by their created_at property", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((result) => {
+        expect(result.body.comments).toBeSortedBy("created_at", {
+          ascending: true,
+        });
+      });
+  });
+  test("Returns 400 when passed an invalid id", () => {
+    return request(app)
+      .get("/api/articles/abc/comments")
+      .expect(400)
+      .then((result) => {
+        expect(result.body.msg).toBe("Bad Request");
+      });
+  });
+});
 
 describe("404 Error", () => {
 test("Returns a status code of 404 when passed a endpoint that does not exist", () => {
     return request(app)
       .get("/api/invalid_endpoint")
       .expect(404)
-      .then((res) => {
-        expect(res.body.msg).toBe("End Point Not Found.");
+      .then((result) => {
+        expect(result.body.msg).toBe("End Point Not Found.");
       });
   });
 });
@@ -161,14 +179,3 @@ test("Returns a status code of 404 when passed a endpoint that does not exist", 
 
 
 
-
-
-
-// an array of comments for the given article_id of which each comment should have the following properties:
-// comment_id
-// votes
-// created_at
-// author
-// body
-// article_id
-// comments should be served with the most recent comments first
