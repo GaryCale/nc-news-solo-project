@@ -16,21 +16,23 @@ app.get("/api/articles/:article_id", getSingleArticleById);
 
 app.get("/api/articles/:article_id/comments", getComments);
 
+// app.post("/api/articles/:article_id/comments", postComment);
+
 app.all("/*", (request, response, next) => {
   response.status(404).send({ msg: "End Point Not Found." });
 });
 
-app.use((err, req, res, next) => {
-  if(err.status && err.msg){
-    res.status(err.status).send({msg: err.msg})
+app.use((error, request, response, next) => {
+  if (error.code === "22P02") {
+    response.status(400).send({ msg: "Bad Request" });
   } else {
-    next(err)
+    next(error);
   }
-})
+});
 
-app.use((err, req, res, next) => {
-  if (err.code === "22P02") {
-    res.status(400).send({ msg: "Bad Request" });
+app.use((error, request, response, next) => {
+  if(error.status && error.msg){
+    response.status(error.status).send({msg: error.msg})
   } else {
     next(err)
   }
