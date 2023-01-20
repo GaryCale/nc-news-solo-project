@@ -4,12 +4,13 @@ const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data");
 
-afterAll(() => {
-  return db.end();
-});
 
 beforeEach(() => {
   return seed(testData);
+});
+
+afterAll(() => {
+  return db.end();
 });
 
 describe("Endpoint: GET api/topics", () => {
@@ -158,6 +159,53 @@ describe("Endpoint: GET /api/articles/:article_id/comments", () => {
       .expect(400)
       .then((res) => {
         expect(res.body.msg).toBe("Bad Request");
+      });
+  });
+});
+
+describe("Endpoint: POST /api/articles/:article_id/comments", () => {
+  test("Returns a status code of 200 when correct post request is made", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .expect(201)
+      .send({
+        username: "butter_bridge",
+            body: "string"
+      })
+  });
+  test("Returns an object with correct properties and values", () => {
+    return request(app)
+    .post("/api/articles/1/comments")
+    .expect(201)
+    .send({
+      username: "butter_bridge",
+      body: "string",
+    })
+    .then((res) => {
+      expect(res.body.article).toMatchObject({
+        comment_id: expect.any(Number),
+        body: expect.any(String),
+        article_id: expect.any(Number),
+        author: expect.any(String),
+        votes: expect.any(Number),
+        created_at: expect.any(String),
+      });
+    })
+  });
+  test("Returns 400 when passed an invalid id", () => {
+    return request(app)
+      .post("/api/articles/abc/comments")
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe("Bad Request");
+      });
+  });
+  test("Returns 404 when passed a valid id but it does not exist", () => {
+    return request(app)
+      .get("/api/articles/999/comments")
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe("Comments not found");
       });
   });
 });

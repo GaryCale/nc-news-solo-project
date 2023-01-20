@@ -40,9 +40,30 @@ const fetchComments = (id) => {
   });
 };
 
+const insertComment = (newComment, id) => {
+  const { body, username } = newComment;
+  console.log(body, username, id);
+  return db
+    .query(
+      `INSERT INTO comments (body, author, article_id) VALUES ($1, $2, $3) 
+        RETURNING *;`,
+      [body, username, id]
+    )
+    .then((result) => {
+      if (result.rows.length < 1) {
+        return Promise.reject({
+          status: 404,
+          msg: "Comments not found",
+        });
+      }
+      return result.rows[0];
+    });
+};
+
 module.exports = {
   fetchTopics,
   fetchArticles,
   fetchSingleArticle,
   fetchComments,
+  insertComment
 };
