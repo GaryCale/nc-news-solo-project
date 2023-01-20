@@ -9,8 +9,8 @@ const {
 
 const getTopics = (request, response, next) => {
   fetchTopics()
-    .then((result) => {
-      response.status(200).send({ topics: result });
+    .then((topics) => {
+      response.status(200).send({ topics: topics });
     })
     .catch((err) => {
       next(err);
@@ -39,7 +39,7 @@ const getSingleArticleById = (request, response, next) => {
 };
 
 const getComments = (request, response, next) => {
-  const { article_id } = request.params;
+  const { article_id } = request.params
   fetchComments(article_id)
   .then((comments) => {
     response.status(200).send({ comments: comments });
