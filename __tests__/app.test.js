@@ -67,7 +67,7 @@ describe("Endpoint: GET /api/articles", () => {
         });
       });
   });
-  test("The article objects are sorted in descending order by their date property", () => {
+  test("The articleS are sorted in descending order by their date property", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -83,7 +83,6 @@ describe("Endpoint: GET /api/articles/:article_id", () => {
   test("Returns a status code of 200 when query exists", () => {
     return request(app).get("/api/articles/1").expect(200);
   });
-
   test("Returns 404 when passed a valid id but it does not exist", () => {
     return request(app)
     .get("/api/articles/999")
@@ -92,7 +91,6 @@ describe("Endpoint: GET /api/articles/:article_id", () => {
       expect(result.body.msg).toBe("Article not found")
     })
   })
-  
   test("Returns 400 when passed an invalid id", () => {
     return request(app)
     .get("/api/articles/abc")
@@ -101,7 +99,6 @@ describe("Endpoint: GET /api/articles/:article_id", () => {
       expect(result.body.msg).toBe("Bad Request")
     })
   })
-
   test("Returns a single article object with an id which matches the parametric id, and article has the correct properties", () => {
     return request(app)
       .get("/api/articles/1")
